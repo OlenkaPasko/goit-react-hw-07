@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { fetchContacts } from "./contactsOps";
 
 const initialState = {
   items: [],
@@ -12,29 +13,28 @@ const contactsSlice = createSlice({
   // Початковий стан редюсера слайсу
   initialState,
 
-  reducers: {
+  extraReducers: (builder) => {
     // Виконається в момент старту HTTP-запиту
-    fetchingContacts(state) {
-      state.isLoading = true;
-    },
-    // Виконається якщо HTTP-запит завершився успішно
-    fetchingSuccess(state, action) {
-      state.isLoading = false;
-      state.error = null;
-      state.items = action.payload;
-    },
-    // Виконається якщо HTTP-запит завершився з помилкою
-    fetchingError(state, action) {
-      state.isLoading = false;
-      state.error = action.payload;
-    },
+    builder
+      .addCase(fetchContacts.pending, (state, action) => {
+        state.isLoading = true;
+      })
+
+      // Виконається якщо HTTP-запит завершився успішно
+      .addCase(fetchContacts.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.error = null;
+        state.items = action.payload;
+      })
+
+      // Виконається якщо HTTP-запит завершився з помилкою
+      .addCase(fetchContacts.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
   },
 });
-// Генератори екшенів для використання в dispatch
-export const { fetchContacts, fetchingSuccess, fetchingError } = contactsSlice.actions;
 
-// Функція-селектор для використання в useSelector
-//export const selectContacts = (state) => state.contacts.items;
-
+export const contactsReducer = contactsSlice.reducer;
 // Редюсер слайсу
 //export default contactsSlice.reducer;
