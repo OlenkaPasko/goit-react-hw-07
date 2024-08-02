@@ -1,12 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  items: [
-    { id: "id-1", name: "Rosie Simpson", number: "459-12-56" },
-    { id: "id-2", name: "Hermione Kline", number: "443-89-12" },
-    { id: "id-3", name: "Eden Clements", number: "645-17-79" },
-    { id: "id-4", name: "Annie Copeland", number: "227-91-26" },
-  ],
+  items: [],
+  isLoading: false,
+  error: null,
 };
 
 const contactsSlice = createSlice({
@@ -16,22 +13,28 @@ const contactsSlice = createSlice({
   initialState,
 
   reducers: {
-    addContact(state, action) {
-      console.log(action);
-      state.items.push(action.payload);
+    // Виконається в момент старту HTTP-запиту
+    fetchingContacts(state) {
+      state.isLoading = true;
     },
-    deleteContact(state, action) {
-      state.items = state.items.filter(
-        (contact) => contact.id !== action.payload
-      );
+    // Виконається якщо HTTP-запит завершився успішно
+    fetchingSuccess(state, action) {
+      state.isLoading = false;
+      state.error = null;
+      state.items = action.payload;
+    },
+    // Виконається якщо HTTP-запит завершився з помилкою
+    fetchingError(state, action) {
+      state.isLoading = false;
+      state.error = action.payload;
     },
   },
 });
 // Генератори екшенів для використання в dispatch
-export const { addContact, deleteContact } = contactsSlice.actions;
+export const { fetchContacts, fetchingSuccess, fetchingError } = contactsSlice.actions;
 
 // Функція-селектор для використання в useSelector
-export const selectContacts = (state) => state.contacts.items;
+//export const selectContacts = (state) => state.contacts.items;
 
 // Редюсер слайсу
-export default contactsSlice.reducer;
+//export default contactsSlice.reducer;
