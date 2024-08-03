@@ -1,6 +1,6 @@
 import {
   createSlice, createSelector} from "@reduxjs/toolkit";
-import { fetchContacts } from "./contactsOps";
+import { fetchContacts, addContact, deleteContact } from "./contactsOps";
 
 const initialState = {
   items: [],
@@ -59,7 +59,7 @@ const contactsSlice = createSlice({
   },
 
 });
-export const { addContact, deleteContact } = contactsSlice.actions;
+//export const { addContact, deleteContact } = contactsSlice.actions;
 
 // Функція-селектор для використання в useSelector
 export const selectContacts = (state) => state.contacts.items;

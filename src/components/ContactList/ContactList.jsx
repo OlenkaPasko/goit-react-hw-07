@@ -1,6 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
 import {
-  deleteContact,
   selectFilteredContacts,
 } from "../../redux/contactsSlice";
 
