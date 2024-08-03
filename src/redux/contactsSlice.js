@@ -1,4 +1,5 @@
-import { createSlice } from "@reduxjs/toolkit";
+import {
+  createSlice, createSelector} from "@reduxjs/toolkit";
 import { fetchContacts } from "./contactsOps";
 
 const initialState = {
@@ -9,14 +10,11 @@ const initialState = {
 
 const contactsSlice = createSlice({
   name: "contacts",
-
-  // Початковий стан редюсера слайсу
   initialState,
-
   extraReducers: (builder) => {
     // Виконається в момент старту HTTP-запиту
     builder
-      .addCase(fetchContacts.pending, (state, action) => {
+      .addCase(fetchContacts.pending, (state) => {
         state.isLoading = true;
       })
 
@@ -31,10 +29,51 @@ const contactsSlice = createSlice({
       .addCase(fetchContacts.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
+      })
+      .addCase(addContact.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(addContact.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.error = null;
+        state.items.push(action.payload);
+      })
+      .addCase(addContact.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(deleteContact.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(deleteContact.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.error = null;
+        state.items = state.items.filter(
+          (contact) => contact.id !== action.payload.id
+        );
+      })
+      .addCase(deleteContact.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
       });
   },
-});
 
-export const contactsReducer = contactsSlice.reducer;
-// Редюсер слайсу
-//export default contactsSlice.reducer;
+});
+export const { addContact, deleteContact } = contactsSlice.actions;
+
+// Функція-селектор для використання в useSelector
+export const selectContacts = (state) => state.contacts.items;
+export const selectLoading = (state) => state.contacts.isLoading;
+export const selectError = (state) => state.contacts.error;
+
+// Мемоїззація селектора для фільтрації контактів
+export const selectFilteredContacts = createSelector(
+  [selectContacts, (state) => state.filters.name],
+  (contacts, nameFilter) => {
+    return contacts.filter((contact) =>
+      contact.name.toLowerCase().includes(nameFilter.toLowerCase())
+    );
+  }
+);
+
+export default contactsSlice.reducer;
