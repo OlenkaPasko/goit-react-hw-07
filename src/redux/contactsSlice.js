@@ -1,5 +1,4 @@
-import {
-  createSlice, createSelector} from "@reduxjs/toolkit";
+import { createSlice, createSelector } from "@reduxjs/toolkit";
 import { fetchContacts, addContact, deleteContact } from "./contactsOps";
 
 const initialState = {
@@ -12,20 +11,15 @@ const contactsSlice = createSlice({
   name: "contacts",
   initialState,
   extraReducers: (builder) => {
-    // Виконається в момент старту HTTP-запиту
     builder
       .addCase(fetchContacts.pending, (state) => {
         state.isLoading = true;
       })
-
-      // Виконається якщо HTTP-запит завершився успішно
       .addCase(fetchContacts.fulfilled, (state, action) => {
         state.isLoading = false;
         state.error = null;
         state.items = action.payload;
       })
-
-      // Виконається якщо HTTP-запит завершився з помилкою
       .addCase(fetchContacts.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
@@ -57,9 +51,7 @@ const contactsSlice = createSlice({
         state.error = action.payload;
       });
   },
-
 });
-//export const { addContact, deleteContact } = contactsSlice.actions;
 
 // Функція-селектор для використання в useSelector
 export const selectContacts = (state) => state.contacts.items;
